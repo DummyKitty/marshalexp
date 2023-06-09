@@ -24,4 +24,8 @@ public class GHashset {
         key.set(node,entry);
         return hashset;
     }
+
+    public static HashSet deserialize2getValue(Object entry) throws Exception{
+        return generateHashSet(entry);
+    }
 }
