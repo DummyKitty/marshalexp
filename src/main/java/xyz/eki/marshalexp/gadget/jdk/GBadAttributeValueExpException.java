@@ -11,4 +11,7 @@ public class GBadAttributeValueExpException {
         ReflectUtils.setFieldValue(badAttributeValueExpException,"val",poc);
         return badAttributeValueExpException;
     }
+    public static BadAttributeValueExpException deserialize2getValue(Object poc) throws Exception {
+        return deserialize2ToString(poc);
+    }
 }
