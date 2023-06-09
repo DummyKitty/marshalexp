@@ -28,4 +28,13 @@ public class GHashMap {
         ReflectUtils.setFieldValue(s, "table", tbl);
         return s;
     }
+
+    public static java.util.HashMap<Object, Object> deserialize2getValue(Object v1, Object v2 ) throws Exception {
+        return deserialize2HashCode(v1,v2 );
+    }
+
+    public static java.util.HashMap<Object, Object> deserialize2ToString(Object v1, Object v2 ) throws Exception {
+        return deserialize2HashCode(v1,v2 );
+    }
+
 }
