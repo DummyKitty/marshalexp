@@ -1,4 +1,4 @@
-OBJ = MSpringJNIController.cpp
+OBJ = SpringControllerJNIMemshell.cpp
 CFLAGS = -shared -fPIC
 CC = gcc
 TARGET = jni.so

