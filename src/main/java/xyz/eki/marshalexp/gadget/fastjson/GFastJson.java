@@ -2,7 +2,6 @@ package xyz.eki.marshalexp.gadget.fastjson;
 
 import com.alibaba.fastjson.JSONObject;
 import com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl;
-import com.yancao.ctf.bean.URLHelper;
 import xyz.eki.marshalexp.gadget.jdk.GBadAttributeValueExpException;
 import xyz.eki.marshalexp.gadget.jdk.GHashMap;
 import xyz.eki.marshalexp.gadget.jdk.GSignedObject;

@@ -64,6 +64,15 @@ public class SerializeUtils {
         return;
     }
 
+    public static Object deserialize(String inPath) throws Exception{
+        FileInputStream fis = new FileInputStream(inPath);
+        ObjectInputStream ois = new ObjectInputStream(fis);
+        Object o = ois.readObject();
+        ois.close();
+        fis.close();
+        return o;
+    }
+
     public static Object deserialize(byte[] bytes) throws Exception{
         ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
         ObjectInputStream ois = new ObjectInputStream(bis);

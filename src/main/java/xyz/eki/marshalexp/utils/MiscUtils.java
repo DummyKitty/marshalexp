@@ -5,10 +5,15 @@ import com.sun.org.apache.bcel.internal.classfile.JavaClass;
 import com.sun.org.apache.bcel.internal.classfile.Utility;
 import javassist.ClassPool;
 import javassist.CtClass;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import xyz.eki.marshalexp.memshell.Evil;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.DateFormat;
@@ -42,6 +47,19 @@ public class MiscUtils {
     public static String base64Encode(byte[] bytes){
         return Base64.getEncoder().encodeToString(bytes);
     }
+
+    public static String urlEncode(String str) throws UnsupportedEncodingException {
+        return URLEncoder.encode(str, "UTF-8");
+    }
+
+    public static String base64EncodeUrlsafe(byte[] bytes){
+        return Base64.getUrlEncoder().encodeToString(bytes);
+    }
+
+    public static byte[] base64DecodeUrlsafe(String str){
+        return Base64.getUrlDecoder().decode(str);
+    }
+
     public static byte[] base64Decode(String str){
         return Base64.getDecoder().decode(str);
     }
